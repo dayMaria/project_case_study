@@ -1,8 +1,8 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, BaseEntity } from 'typeorm';
 import { IsString, IsNotEmpty } from 'class-validator';
 
 @Entity()
-export class Context {
+export class Context extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 

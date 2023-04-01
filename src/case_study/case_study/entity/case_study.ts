@@ -1,8 +1,8 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, BaseEntity } from 'typeorm';
 import { IsString, IsNotEmpty } from 'class-validator';
 
 @Entity()
-export class CaseStudy {
+export class CaseStudy extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
