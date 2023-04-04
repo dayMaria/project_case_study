@@ -1,4 +1,4 @@
-import { IsString, IsBoolean, MinLength } from 'class-validator';
+import { IsString, IsBoolean, MinLength, IsInt } from 'class-validator';
 
 export class UsersDto {
   @IsString()
@@ -15,4 +15,7 @@ export class UsersDto {
   @IsString()
   @MinLength(1)
   name: string;
+
+  @IsInt()
+  rolesId: number;
 }
