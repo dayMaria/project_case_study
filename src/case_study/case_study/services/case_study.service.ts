@@ -2,29 +2,34 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CaseStudyDto } from '../dto/case_study.dto';
 import { CaseStudy } from '../entity/case_study';
 import { ObjectUtils } from 'typeorm/util/ObjectUtils';
-import { OrmUtils } from 'typeorm/util/OrmUtils';
+import { Context } from 'src/context/context/entity/context.entity';
+import { In } from 'typeorm';
 
 @Injectable()
 export class CaseStudyService {
   async create(createCaseStudyDto: CaseStudyDto) {
     const caseStudy = new CaseStudy();
-    let date = new Date(createCaseStudyDto.create_date);
-    caseStudy.create_date = date;
-    date = new Date(createCaseStudyDto.commit_date);
-    caseStudy.create_date = date;
-    date = new Date(createCaseStudyDto.end_date);
-    caseStudy.create_date = date;
+    caseStudy.create_date = new Date(createCaseStudyDto.create_date);
+    caseStudy.commit_date = new Date(createCaseStudyDto.commit_date);
+    caseStudy.end_date = new Date(createCaseStudyDto.end_date);
+    const contextIds = await Context.find({
+      where: { id: In(createCaseStudyDto.contextIds) },
+    });
     ObjectUtils.assign(caseStudy, createCaseStudyDto);
+    caseStudy.contexts = contextIds;
     await caseStudy.save();
     return caseStudy;
   }
 
   async findAll() {
-    return await CaseStudy.find();
+    return await CaseStudy.find({ relations: ['contexts'] });
   }
 
   async findOne(id: number) {
-    const found = await CaseStudy.findOne({ where: { id } });
+    const found = await CaseStudy.findOne({
+      relations: ['contexts'],
+      where: { id },
+    });
     if (!found) {
       throw new NotFoundException(`Case study with id ${id} not found`);
     }
@@ -34,16 +39,18 @@ export class CaseStudyService {
   async update(id: number, createCaseStudyDto: CaseStudyDto) {
     const caseStudy = await this.findOne(id);
     if (caseStudy) {
-      let date = new Date(createCaseStudyDto.create_date);
-      caseStudy.create_date = date;
-      date = new Date(createCaseStudyDto.commit_date);
-      caseStudy.create_date = date;
-      date = new Date(createCaseStudyDto.end_date);
-      caseStudy.create_date = date;
-      OrmUtils.mergeDeep(caseStudy, createCaseStudyDto);
-      await CaseStudy.update(id, createCaseStudyDto);
+      caseStudy.create_date = new Date(createCaseStudyDto.create_date);
+      caseStudy.commit_date = new Date(createCaseStudyDto.commit_date);
+      caseStudy.end_date = new Date(createCaseStudyDto.end_date);
+      const contextIds = await Context.find({
+        where: { id: In(createCaseStudyDto.contextIds) },
+      });
+      caseStudy.description = createCaseStudyDto.description;
+      caseStudy.name = createCaseStudyDto.name;
+      caseStudy.contexts = contextIds;
+      await caseStudy.save();
+      return caseStudy;
     }
-    return caseStudy;
   }
 
   async remove(id: number) {

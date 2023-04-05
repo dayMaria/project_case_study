@@ -1,4 +1,4 @@
-import { IsString, IsOptional, MinLength } from 'class-validator';
+import { IsString, IsOptional, MinLength, IsArray } from 'class-validator';
 
 export class AnalysisUnitDto {
   @IsString()
@@ -8,4 +8,7 @@ export class AnalysisUnitDto {
   @IsString()
   @IsOptional()
   description: string;
+
+  @IsArray()
+  systemsIds: number[];
 }

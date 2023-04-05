@@ -1,4 +1,4 @@
-import { IsString, MinLength, IsOptional } from 'class-validator';
+import { IsString, MinLength, IsOptional, IsArray } from 'class-validator';
 
 export class CaseStudyDto {
   @IsString()
@@ -17,4 +17,7 @@ export class CaseStudyDto {
 
   @IsString()
   end_date: string;
+
+  @IsArray()
+  contextIds: number[];
 }
