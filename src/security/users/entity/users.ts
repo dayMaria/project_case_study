@@ -1,5 +1,13 @@
-import { Entity, Column, PrimaryGeneratedColumn, BaseEntity } from 'typeorm';
-import { IsString, IsNotEmpty } from 'class-validator';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  BaseEntity,
+  ManyToMany,
+  JoinTable,
+} from 'typeorm';
+import { IsString, IsNotEmpty, IsEmail } from 'class-validator';
+import { Roles } from 'src/security/roles/entity/roles';
 
 @Entity()
 export class Users extends BaseEntity {
@@ -25,7 +33,11 @@ export class Users extends BaseEntity {
   name: string;
 
   @Column()
-  @IsString()
-  @IsNotEmpty()
+  //@IsString()
+  @IsEmail()
   email: string;
+
+  @ManyToMany(() => Roles, (roles) => roles.users)
+  @JoinTable()
+  roles: Roles[];
 }

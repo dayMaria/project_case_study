@@ -2,13 +2,17 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { UsersDto } from '../dto/users.dto';
 import { Users } from '../entity/users';
 import { ObjectUtils } from 'typeorm/util/ObjectUtils';
-import { OrmUtils } from 'typeorm/util/OrmUtils';
-
+import { Roles } from 'src/security/roles/entity/roles';
+import { In } from 'typeorm';
 @Injectable()
 export class UsersService {
   async create(createUsersDto: UsersDto) {
     const user = new Users();
+    const rolesIds = await Roles.find({
+      where: { id: In(createUsersDto.rolesIds) },
+    });
     ObjectUtils.assign(user, createUsersDto);
+    user.roles = rolesIds;
     await user.save();
     return user;
   }
@@ -28,10 +32,18 @@ export class UsersService {
   async update(id: number, createUsersDto: UsersDto) {
     const userUpdate = await this.findOne(id);
     if (userUpdate) {
-      OrmUtils.mergeDeep(userUpdate, createUsersDto);
-      await Users.update(id, createUsersDto);
+      const roles = await Roles.find({
+        where: { id: In(createUsersDto.rolesIds) },
+      });
+      userUpdate.user_name = createUsersDto.user_name;
+      userUpdate.password = createUsersDto.password;
+      userUpdate.active = createUsersDto.active;
+      userUpdate.name = createUsersDto.name;
+      userUpdate.email = createUsersDto.email;
+      userUpdate.roles = roles;
+      await userUpdate.save();
+      return userUpdate;
     }
-    return userUpdate;
   }
 
   async remove(id: number) {

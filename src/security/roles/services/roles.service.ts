@@ -14,11 +14,11 @@ export class RolesService {
   }
 
   async findAll() {
-    return await Roles.find();
+    return await Roles.find({ relations: ['users'] });
   }
 
   async findOne(id: number) {
-    const found = await Roles.findOne({ where: { id } });
+    const found = await Roles.findOne({ relations: ['users'], where: { id } });
     if (!found) {
       throw new NotFoundException(`Rol with id ${id} not found`);
     }

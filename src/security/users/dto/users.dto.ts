@@ -1,4 +1,10 @@
-import { IsString, IsBoolean, MinLength, IsInt } from 'class-validator';
+import {
+  IsString,
+  IsBoolean,
+  MinLength,
+  IsArray,
+  IsEmail,
+} from 'class-validator';
 
 export class UsersDto {
   @IsString()
@@ -16,6 +22,9 @@ export class UsersDto {
   @MinLength(1)
   name: string;
 
-  @IsInt()
-  rolesId: number;
+  @IsEmail()
+  email: string;
+
+  @IsArray()
+  rolesIds: number[];
 }
