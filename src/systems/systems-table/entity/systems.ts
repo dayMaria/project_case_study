@@ -1,13 +1,5 @@
-import {
-  BaseEntity,
-  Column,
-  Entity,
-  ManyToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { IsString, IsNotEmpty } from 'class-validator';
-import { Context } from 'src/context/context/entity/context.entity';
-import { AnalysisUnit } from 'src/analysis_unit/analysis_unit/entity/analysis_unit';
 
 @Entity()
 export class Systems extends BaseEntity {
@@ -23,10 +15,4 @@ export class Systems extends BaseEntity {
   @IsString()
   @IsNotEmpty()
   description: string;
-
-  @ManyToMany(() => Context, (context) => context.systems)
-  contexts: Context[];
-
-  @ManyToMany(() => AnalysisUnit, (analysisUnits) => analysisUnits.systems)
-  analysisUnits: AnalysisUnit[];
 }

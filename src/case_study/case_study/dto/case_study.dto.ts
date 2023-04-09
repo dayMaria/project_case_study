@@ -1,5 +1,16 @@
 import { IsString, MinLength, IsOptional, IsArray } from 'class-validator';
 
+export interface ContextDto {
+  id: number;
+  aus: number[];
+  systems: number[];
+}
+
+export interface YearsDto {
+  year: number;
+  contexts: ContextDto[];
+}
+
 export class CaseStudyDto {
   @IsString()
   @MinLength(1)
@@ -10,14 +21,12 @@ export class CaseStudyDto {
   description: string;
 
   @IsString()
-  create_date: string;
-
-  @IsString()
   commit_date: string;
 
   @IsString()
-  end_date: string;
+  @IsOptional()
+  end_date?: string;
 
   @IsArray()
-  contextIds: number[];
+  years: YearsDto[];
 }

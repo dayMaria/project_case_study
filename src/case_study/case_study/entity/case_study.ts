@@ -3,11 +3,9 @@ import {
   Column,
   PrimaryGeneratedColumn,
   BaseEntity,
-  ManyToMany,
-  JoinTable,
+  CreateDateColumn,
 } from 'typeorm';
 import { IsString, IsNotEmpty } from 'class-validator';
-import { Context } from 'src/context/context/entity/context.entity';
 
 @Entity()
 export class CaseStudy extends BaseEntity {
@@ -24,7 +22,7 @@ export class CaseStudy extends BaseEntity {
   @IsNotEmpty()
   description: string;
 
-  @Column({ type: 'date' })
+  @CreateDateColumn()
   create_date: Date;
 
   @Column({ type: 'date' })
@@ -32,8 +30,4 @@ export class CaseStudy extends BaseEntity {
 
   @Column({ type: 'date' })
   end_date: Date;
-
-  @ManyToMany(() => Context, (context) => context.caseStudys)
-  @JoinTable()
-  contexts: Context[];
 }

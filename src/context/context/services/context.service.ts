@@ -1,37 +1,27 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ContextDto } from '../dto/context.dto';
 import { Context } from '../entity/context.entity';
-import { ObjectUtils } from 'typeorm/util/ObjectUtils';
-import { AnalysisUnit } from 'src/analysis_unit/analysis_unit/entity/analysis_unit';
-import { In } from 'typeorm';
-import { Systems } from 'src/systems/systems-table/entity/systems';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class ContextService {
+  constructor(
+    @InjectRepository(Context)
+    private readonly contextRepository: Repository<Context>,
+  ) {}
   async create(createContextDto: ContextDto) {
-    const context = new Context();
-    const analysisUnitIds = await AnalysisUnit.find({
-      where: { id: In(createContextDto.analysisUnitIds) },
-    });
-    const systems = await Systems.find({
-      where: { id: In(createContextDto.systemsIds) },
-    });
-    ObjectUtils.assign(context, createContextDto);
-    context.analysisUnits = analysisUnitIds;
-    context.systems = systems;
-    await context.save();
+    const context = this.contextRepository.create(createContextDto);
+    await this.contextRepository.save(context);
     return context;
   }
 
   async findAll() {
-    return await Context.find({ relations: ['analysisUnits', 'systems'] });
+    return await this.contextRepository.find();
   }
 
   async findOne(id: number) {
-    const found = await Context.findOne({
-      relations: ['analysisUnits', 'systems'],
-      where: { id },
-    });
+    const found = await this.contextRepository.findOne({ where: { id } });
     if (!found) {
       throw new NotFoundException(`Context with id ${id} not found`);
     }
@@ -39,25 +29,15 @@ export class ContextService {
   }
 
   async update(id: number, createContextDto: ContextDto) {
-    const contextUpdate = await this.findOne(id);
-    if (contextUpdate) {
-      const analysisUnitIds = await AnalysisUnit.find({
-        where: { id: In(createContextDto.analysisUnitIds) },
-      });
-      const systems = await Systems.find({
-        where: { id: In(createContextDto.systemsIds) },
-      });
-      contextUpdate.name = createContextDto.name;
-      contextUpdate.description = createContextDto.description;
-      contextUpdate.analysisUnits = analysisUnitIds;
-      contextUpdate.systems = systems;
-      await contextUpdate.save();
+    if (await this.findOne(id)) {
+      await this.contextRepository.update(id, createContextDto);
+      const contextUpdate = await this.findOne(id);
       return contextUpdate;
     }
   }
 
   async remove(id: number) {
-    const deleteContext = await Context.delete(id);
+    const deleteContext = await this.contextRepository.delete(id);
     if (!deleteContext.affected) {
       throw new NotFoundException(`Context with id ${id} not found`);
     }

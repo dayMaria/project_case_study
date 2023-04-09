@@ -1,24 +1,27 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { RolesDto } from '../dto/roles.dto';
 import { Roles } from '../entity/roles';
-import { ObjectUtils } from 'typeorm/util/ObjectUtils';
-import { OrmUtils } from 'typeorm/util/OrmUtils';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class RolesService {
+  constructor(
+    @InjectRepository(Roles)
+    private readonly rolesRepository: Repository<Roles>,
+  ) {}
   async create(createdRolesDto: RolesDto) {
-    const roles = new Roles();
-    ObjectUtils.assign(roles, createdRolesDto);
-    await roles.save();
+    const roles = this.rolesRepository.create(createdRolesDto);
+    await this.rolesRepository.save(createdRolesDto);
     return roles;
   }
 
   async findAll() {
-    return await Roles.find({ relations: ['users'] });
+    return await this.rolesRepository.find();
   }
 
   async findOne(id: number) {
-    const found = await Roles.findOne({ relations: ['users'], where: { id } });
+    const found = await this.rolesRepository.findOne({ where: { id } });
     if (!found) {
       throw new NotFoundException(`Rol with id ${id} not found`);
     }
@@ -26,16 +29,15 @@ export class RolesService {
   }
 
   async update(id: number, createdRolesDto: RolesDto) {
-    const rolesUpdate = await this.findOne(id);
-    if (rolesUpdate) {
-      OrmUtils.mergeDeep(rolesUpdate, createdRolesDto);
-      await Roles.update(id, createdRolesDto);
+    if (await this.findOne(id)) {
+      await this.rolesRepository.update(id, createdRolesDto);
+      const rolesUpdate = await this.findOne(id);
+      return rolesUpdate;
     }
-    return rolesUpdate;
   }
 
   async remove(id: number) {
-    const deleteRoles = await Roles.delete(id);
+    const deleteRoles = await this.rolesRepository.delete(id);
     if (!deleteRoles.affected) {
       throw new NotFoundException(`Rol with id ${id} not found`);
     }

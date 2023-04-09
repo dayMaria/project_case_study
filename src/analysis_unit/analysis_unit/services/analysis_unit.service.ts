@@ -1,32 +1,30 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { AnalysisUnitDto } from '../dto/analysis_unit.dto';
 import { AnalysisUnit } from '../entity/analysis_unit';
-import { ObjectUtils } from 'typeorm/util/ObjectUtils';
-import { Systems } from 'src/systems/systems-table/entity/systems';
-import { In } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AnalysisUnitService {
+  constructor(
+    @InjectRepository(AnalysisUnit)
+    private readonly analysisUnitRepository: Repository<AnalysisUnit>,
+  ) {}
+
   async create(createAnalysisUnitDto: AnalysisUnitDto) {
-    const analysisUnit = new AnalysisUnit();
-    const systems = await Systems.find({
-      where: { id: In(createAnalysisUnitDto.systemsIds) },
-    });
-    ObjectUtils.assign(analysisUnit, createAnalysisUnitDto);
-    analysisUnit.systems = systems;
-    await analysisUnit.save();
+    const analysisUnit = this.analysisUnitRepository.create(
+      createAnalysisUnitDto,
+    );
+    await this.analysisUnitRepository.save(analysisUnit);
     return analysisUnit;
   }
 
   async findAll() {
-    return await AnalysisUnit.find({ relations: ['systems'] });
+    return await this.analysisUnitRepository.find();
   }
 
   async findOne(id: number) {
-    const found = await AnalysisUnit.findOne({
-      relations: ['systems'],
-      where: { id },
-    });
+    const found = await this.analysisUnitRepository.findOne({ where: { id } });
     if (!found) {
       throw new NotFoundException(`Analysis unit with id ${id} not found`);
     }
@@ -34,21 +32,15 @@ export class AnalysisUnitService {
   }
 
   async update(id: number, createAnalysisUnitDto: AnalysisUnitDto) {
-    const analysisUnit = await this.findOne(id);
-    if (analysisUnit) {
-      const systems = await Systems.find({
-        where: { id: In(createAnalysisUnitDto.systemsIds) },
-      });
-      analysisUnit.name = createAnalysisUnitDto.name;
-      analysisUnit.description = createAnalysisUnitDto.description;
-      analysisUnit.systems = systems;
-      analysisUnit.save();
-      return analysisUnit;
+    if (await this.findOne(id)) {
+      await this.analysisUnitRepository.update(id, createAnalysisUnitDto);
+      const auUpdate = await this.findOne(id);
+      return auUpdate;
     }
   }
 
   async remove(id: number) {
-    const deleteAnalysisUnit = await AnalysisUnit.delete(id);
+    const deleteAnalysisUnit = await this.analysisUnitRepository.delete(id);
     if (!deleteAnalysisUnit.affected) {
       throw new NotFoundException(`Analysis unit with id ${id} not found`);
     }
