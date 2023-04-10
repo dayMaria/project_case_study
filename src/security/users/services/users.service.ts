@@ -41,7 +41,7 @@ export class UsersService {
   async update(id: number, createUsersDto: UsersDto) {
     const userUpdate = await this.findOne(id);
     if (userUpdate) {
-      const roles = await Roles.find({
+      const roles = await this.rolesRepository.find({
         where: { id: In(createUsersDto.rolesIds) },
       });
       userUpdate.user_name = createUsersDto.user_name;
@@ -50,22 +50,10 @@ export class UsersService {
       userUpdate.name = createUsersDto.name;
       userUpdate.email = createUsersDto.email;
       userUpdate.roles = roles;
-      await userUpdate.save();
+      await this.usersRepository.save(userUpdate);
       return userUpdate;
     }
   }
-  //!!!!!!!!!!Verificar xq Repinga no funciona la funcion esta!!!!!!!!!
-  // async update(id: number, createUsersDto: UsersDto) {
-  //   const userUpdate = await this.findOne(id);
-  //   if (userUpdate) {
-  //     const roles = await this.rolesRepository.find({
-  //       where: { id: In(createUsersDto.rolesIds) },
-  //     });
-  //     userUpdate.roles = roles;
-  //     await this.usersRepository.update(id, userUpdate);
-  //     return userUpdate;
-  //   }
-  // }
 
   async remove(id: number) {
     const deleteUsers = await this.usersRepository.delete(id);

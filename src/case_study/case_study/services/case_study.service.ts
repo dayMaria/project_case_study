@@ -73,6 +73,7 @@ export class CaseStudyService {
     const years = new Set();
     for (const ctxAu of contextSystems) years.add(ctxAu.year);
     years.forEach((year: number) => {
+      //console.log(year);
       const yearDto: YearsDto = {
         year,
         contexts: [],
@@ -97,6 +98,8 @@ export class CaseStudyService {
     return {
       name: caseStudy.name,
       description: caseStudy.description,
+      commit_date: caseStudy.commit_date,
+      end_date: caseStudy.end_date,
       years: yearsDto,
     };
   }
