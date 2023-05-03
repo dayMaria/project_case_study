@@ -33,7 +33,6 @@ export class Users extends BaseEntity {
   name: string;
 
   @Column()
-  //@IsString()
   @IsEmail()
   email: string;
 

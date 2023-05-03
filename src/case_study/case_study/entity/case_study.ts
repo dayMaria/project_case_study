@@ -12,7 +12,7 @@ export class CaseStudy extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('text')
+  @Column('text', { unique: true })
   @IsString()
   @IsNotEmpty()
   name: string;

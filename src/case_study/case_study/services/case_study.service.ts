@@ -57,7 +57,7 @@ export class CaseStudyService {
   }
 
   async findOne(id: number) {
-    const caseStudy = await CaseStudy.findOne({
+    const caseStudy = await this.caseStudyRepository.findOne({
       where: { id },
     });
     if (!caseStudy) {
@@ -87,62 +87,69 @@ export class CaseStudyService {
           const systems = contextSystems
             .filter((c) => c.year === year && c.context === ctxAus.context)
             .map((c) => c.system);
-          yearDto.contexts.push({
-            id: ctxAus.context,
-            aus,
-            systems,
-          });
+          if (!yearDto.contexts.some((c) => c.id === ctxAus.context)) {
+            yearDto.contexts.push({
+              id: ctxAus.context,
+              aus,
+              systems,
+            });
+          }
+          //console.log(yearsDto);
         });
       yearsDto.push(yearDto);
     });
     return {
+      id: caseStudy.id,
       name: caseStudy.name,
       description: caseStudy.description,
       commit_date: caseStudy.commit_date,
       end_date: caseStudy.end_date,
       years: yearsDto,
     };
-  }
+  } /**/
 
   async update(id: number, createCaseStudyDto: CaseStudyDto) {
-    await this.caseStudyRepository.update(
-      { id },
-      {
-        name: createCaseStudyDto.name,
-        commit_date: createCaseStudyDto.commit_date,
-        description: createCaseStudyDto.description,
-        end_date: createCaseStudyDto.end_date,
-      },
-    );
-    await this.caseStudyContextAuRepository.delete({
-      caseStudy: id,
-    });
-    await this.caseStudyContextSystemRepository.delete({ caseStudy: id });
-    const contextUas: CaseStudyContextAU[] = [];
-    const contextSystems: CaseStudyContextSystem[] = [];
-    for (const year of createCaseStudyDto.years) {
-      for (const ctx of year.contexts) {
-        for (const au of ctx.aus) {
-          contextUas.push({
-            caseStudy: id,
-            year: year.year,
-            context: ctx.id,
-            analysisUnit: au,
-          });
-        }
-        for (const system of ctx.systems) {
-          contextSystems.push({
-            caseStudy: id,
-            year: year.year,
-            context: ctx.id,
-            system,
-          });
+    if (await this.caseStudyRepository.findOne({ where: { id } })) {
+      await this.caseStudyRepository.update(
+        { id },
+        {
+          name: createCaseStudyDto.name,
+          commit_date: createCaseStudyDto.commit_date,
+          description: createCaseStudyDto.description,
+          end_date: createCaseStudyDto.end_date,
+        },
+      );
+      await this.caseStudyContextAuRepository.delete({
+        caseStudy: id,
+      });
+      await this.caseStudyContextSystemRepository.delete({ caseStudy: id });
+      const contextUas: CaseStudyContextAU[] = [];
+      const contextSystems: CaseStudyContextSystem[] = [];
+      for (const year of createCaseStudyDto.years) {
+        for (const ctx of year.contexts) {
+          for (const au of ctx.aus) {
+            contextUas.push({
+              caseStudy: id,
+              year: year.year,
+              context: ctx.id,
+              analysisUnit: au,
+            });
+          }
+          for (const system of ctx.systems) {
+            contextSystems.push({
+              caseStudy: id,
+              year: year.year,
+              context: ctx.id,
+              system,
+            });
+          }
         }
       }
+      await this.caseStudyContextAuRepository.save(contextUas);
+      await this.caseStudyContextSystemRepository.save(contextSystems);
+      return this.findOne(id);
     }
-    await this.caseStudyContextAuRepository.save(contextUas);
-    await this.caseStudyContextSystemRepository.save(contextSystems);
-    return await this.caseStudyRepository.findOne({ where: { id } });
+    throw new NotFoundException(`Case study with id ${id} not found`);
   }
 
   async remove(id: number) {
