@@ -87,11 +87,13 @@ export class CaseStudyService {
           const systems = contextSystems
             .filter((c) => c.year === year && c.context === ctxAus.context)
             .map((c) => c.system);
-          yearDto.contexts.push({
-            id: ctxAus.context,
-            aus,
-            systems,
-          });
+          if (!yearDto.contexts.some((c) => c.id === ctxAus.context)) {
+            yearDto.contexts.push({
+              id: ctxAus.context,
+              aus,
+              systems,
+            });
+          }
         });
       yearsDto.push(yearDto);
     });
