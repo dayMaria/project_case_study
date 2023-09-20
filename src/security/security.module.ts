@@ -1,15 +1,12 @@
 import { Module } from '@nestjs/common';
-import { UsersController } from './users/controller/users.controller';
-import { RolesController } from './roles/controller/roles.controller';
-import { UsersService } from './users/services/users.service';
-import { RolesService } from './roles/services/roles.service';
+import { UserController } from './users/controller/user.controller';
+import { UserService } from './users/services/user.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Users } from './users/entity/users';
-import { Roles } from './roles/entity/roles';
+import { User } from './users/entity/user';
 
 @Module({
-  controllers: [UsersController, RolesController],
-  providers: [RolesService, UsersService],
-  imports: [TypeOrmModule.forFeature([Users, Roles])],
+  controllers: [UserController],
+  providers: [UserService],
+  imports: [TypeOrmModule.forFeature([User])],
 })
 export class SecurityModule {}

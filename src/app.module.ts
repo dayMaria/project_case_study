@@ -6,18 +6,20 @@ import { SecurityModule } from './security/security.module';
 import { ContextModule } from './context/context.module';
 import { CaseStudyModule } from './case_study/case_study.module';
 import { AnalysisUnitModule } from './analysis_unit/analysis_unit.module';
-import { SystemsModule } from './systems/systems.module';
 import { AnalysisUnit } from './analysis_unit/analysis_unit/entity/analysis_unit';
-import { Systems } from './systems/systems-table/entity/systems';
 import { Context } from './context/context/entity/context.entity';
-import { Roles } from './security/roles/entity/roles';
-import { Users } from './security/users/entity/users';
+import { User } from './security/users/entity/user';
 import { CaseStudy } from './case_study/case_study/entity/case_study';
 import { CaseStudyContextAU } from './case_study/case_study/entity/case_study_context_au';
-import { CaseStudyContextSystem } from './case_study/case_study/entity/case_study_context_system';
+import { BlobModule } from './blob/blob.module';
+import { NestMinioModule } from 'nestjs-minio';
+import { EvidenceModule } from './evidence/evidence.module';
+import { Evidence } from './evidence/entity/evidence.entity';
+import { EvidenceAttachment } from './evidence/entity/evidence-attachment.entity';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -30,22 +32,33 @@ import { CaseStudyContextSystem } from './case_study/case_study/entity/case_stud
         password: config.get('PASSWORD_CONN1'),
         entities: [
           AnalysisUnit,
-          Systems,
           Context,
-          Roles,
-          Users,
+          User,
           CaseStudy,
           CaseStudyContextAU,
-          CaseStudyContextSystem,
+          Evidence,
+          EvidenceAttachment,
         ],
         synchronize: true,
       }),
     }),
+    NestMinioModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        endPoint: config.get<string>('MINIO_ENDPOINT'),
+        port: parseInt(config.get<string>('MINIO_PORT')),
+        accessKey: config.get<string>('MINIO_ACCESS_KEY'),
+        secretKey: config.get<string>('MINIO_SECRET_KEY'),
+        useSSL: false,
+      }),
+    }),
+    BlobModule,
     SecurityModule,
     ContextModule,
     CaseStudyModule,
     AnalysisUnitModule,
-    SystemsModule,
+    EvidenceModule,
   ],
   controllers: [],
   providers: [AppService],

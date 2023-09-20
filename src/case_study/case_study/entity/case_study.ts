@@ -5,7 +5,6 @@ import {
   BaseEntity,
   CreateDateColumn,
 } from 'typeorm';
-import { IsString, IsNotEmpty } from 'class-validator';
 
 @Entity()
 export class CaseStudy extends BaseEntity {
@@ -13,13 +12,9 @@ export class CaseStudy extends BaseEntity {
   id: number;
 
   @Column('text', { unique: true })
-  @IsString()
-  @IsNotEmpty()
   name: string;
 
   @Column('text')
-  @IsString()
-  @IsNotEmpty()
   description: string;
 
   @CreateDateColumn()

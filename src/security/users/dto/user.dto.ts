@@ -6,10 +6,10 @@ import {
   IsEmail,
 } from 'class-validator';
 
-export class UsersDto {
+export class UserDto {
   @IsString()
   @MinLength(1)
-  user_name: string;
+  username: string;
 
   @IsString()
   @MinLength(1)

@@ -3,7 +3,6 @@ import { IsString, MinLength, IsOptional, IsArray } from 'class-validator';
 export interface ContextDto {
   id: number;
   aus: number[];
-  systems: number[];
 }
 
 export interface YearsDto {

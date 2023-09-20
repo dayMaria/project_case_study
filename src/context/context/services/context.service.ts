@@ -3,12 +3,15 @@ import { ContextDto } from '../dto/context.dto';
 import { Context } from '../entity/context.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CaseStudyContextAU } from 'src/case_study/case_study/entity/case_study_context_au';
 
 @Injectable()
 export class ContextService {
   constructor(
     @InjectRepository(Context)
     private readonly contextRepository: Repository<Context>,
+    @InjectRepository(CaseStudyContextAU)
+    private readonly caseStudyContextRepository: Repository<CaseStudyContextAU>,
   ) {}
   async create(createContextDto: ContextDto) {
     const context = this.contextRepository.create(createContextDto);
@@ -37,6 +40,15 @@ export class ContextService {
   }
 
   async remove(id: number) {
+    if (
+      await this.caseStudyContextRepository.findOne({
+        where: { analysisUnit: id },
+      })
+    ) {
+      throw new NotFoundException(
+        `Can't delete analysis unit because it's assigned to a context`,
+      );
+    }
     const deleteContext = await this.contextRepository.delete(id);
     if (!deleteContext.affected) {
       throw new NotFoundException(`Context with id ${id} not found`);

@@ -1,17 +1,16 @@
-import { Entity, Column, PrimaryGeneratedColumn, BaseEntity } from 'typeorm';
-import { IsString, IsNotEmpty } from 'class-validator';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class AnalysisUnit extends BaseEntity {
+export class AnalysisUnit {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column('text')
-  @IsString()
-  @IsNotEmpty()
   name: string;
 
   @Column('text')
-  @IsString()
   description: string;
+
+  @Column()
+  typeEvidence: number;
 }

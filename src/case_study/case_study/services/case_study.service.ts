@@ -3,7 +3,6 @@ import { CaseStudyDto, YearsDto } from '../dto/case_study.dto';
 import { CaseStudy } from '../entity/case_study';
 import { Repository } from 'typeorm';
 import { CaseStudyContextAU } from '../entity/case_study_context_au';
-import { CaseStudyContextSystem } from '../entity/case_study_context_system';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
@@ -13,8 +12,6 @@ export class CaseStudyService {
     private readonly caseStudyRepository: Repository<CaseStudy>,
     @InjectRepository(CaseStudyContextAU)
     private readonly caseStudyContextAuRepository: Repository<CaseStudyContextAU>,
-    @InjectRepository(CaseStudyContextSystem)
-    private readonly caseStudyContextSystemRepository: Repository<CaseStudyContextSystem>,
   ) {}
 
   async create(createCaseStudyDto: CaseStudyDto) {
@@ -26,7 +23,6 @@ export class CaseStudyService {
       //create_date: new Date(),
     });
     const contextUas: CaseStudyContextAU[] = [];
-    const contextSystems: CaseStudyContextSystem[] = [];
     for (const year of createCaseStudyDto.years) {
       for (const ctx of year.contexts) {
         for (const au of ctx.aus) {
@@ -37,18 +33,9 @@ export class CaseStudyService {
             analysisUnit: au,
           });
         }
-        for (const system of ctx.systems) {
-          contextSystems.push({
-            caseStudy: caseStudy.id,
-            year: year.year,
-            context: ctx.id,
-            system,
-          });
-        }
       }
     }
     await this.caseStudyContextAuRepository.save(contextUas);
-    await this.caseStudyContextSystemRepository.save(contextSystems);
     return caseStudy;
   }
 
@@ -67,11 +54,7 @@ export class CaseStudyService {
     const contextsAus = await this.caseStudyContextAuRepository.find({
       where: { caseStudy: id },
     });
-    const contextSystems = await this.caseStudyContextSystemRepository.find({
-      where: { caseStudy: id },
-    });
     const years = new Set();
-    for (const ctxAu of contextSystems) years.add(ctxAu.year);
     years.forEach((year: number) => {
       //console.log(year);
       const yearDto: YearsDto = {
@@ -84,14 +67,10 @@ export class CaseStudyService {
           const aus = contextsAus
             .filter((c) => c.year === year && c.context === ctxAus.context)
             .map((c) => c.analysisUnit);
-          const systems = contextSystems
-            .filter((c) => c.year === year && c.context === ctxAus.context)
-            .map((c) => c.system);
           if (!yearDto.contexts.some((c) => c.id === ctxAus.context)) {
             yearDto.contexts.push({
               id: ctxAus.context,
               aus,
-              systems,
             });
           }
           //console.log(yearsDto);
@@ -122,9 +101,7 @@ export class CaseStudyService {
       await this.caseStudyContextAuRepository.delete({
         caseStudy: id,
       });
-      await this.caseStudyContextSystemRepository.delete({ caseStudy: id });
       const contextUas: CaseStudyContextAU[] = [];
-      const contextSystems: CaseStudyContextSystem[] = [];
       for (const year of createCaseStudyDto.years) {
         for (const ctx of year.contexts) {
           for (const au of ctx.aus) {
@@ -135,18 +112,9 @@ export class CaseStudyService {
               analysisUnit: au,
             });
           }
-          for (const system of ctx.systems) {
-            contextSystems.push({
-              caseStudy: id,
-              year: year.year,
-              context: ctx.id,
-              system,
-            });
-          }
         }
       }
       await this.caseStudyContextAuRepository.save(contextUas);
-      await this.caseStudyContextSystemRepository.save(contextSystems);
       return this.findOne(id);
     }
     throw new NotFoundException(`Case study with id ${id} not found`);
