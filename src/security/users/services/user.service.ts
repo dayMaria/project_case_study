@@ -16,17 +16,7 @@ export class UserService {
   }
 
   async findAll() {
-    return await this.repository.find({});
-  }
-
-  async findOne(id: number) {
-    const found = await this.repository.findOne({
-      where: { id },
-    });
-    if (!found) {
-      throw new NotFoundException(`User with id ${id} not found`);
-    }
-    return found;
+    return await this.repository.find({ where: { active: true } });
   }
 
   async update(id: number, dto: UserDto) {
@@ -34,6 +24,6 @@ export class UserService {
   }
 
   async remove(id: number) {
-    await this.repository.delete(id);
+    await this.repository.update({ id }, { active: false });
   }
 }

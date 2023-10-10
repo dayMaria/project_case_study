@@ -1,16 +1,20 @@
-import { Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 @Entity()
+@Unique(['caseStudy', 'year', 'context', 'analysisUnit'])
 export class CaseStudyContextAU {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
   caseStudy: number;
 
-  @PrimaryColumn()
+  @Column()
   year: number;
 
-  @PrimaryColumn()
+  @Column()
   context: number;
 
-  @PrimaryColumn()
+  @Column()
   analysisUnit: number;
 }

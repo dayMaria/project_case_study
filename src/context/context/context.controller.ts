@@ -1,14 +1,6 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Put,
-} from '@nestjs/common';
-import { ContextService } from '../services/context.service';
-import { ContextDto } from '../dto/context.dto';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import { ContextService } from './context.service';
+import { ContextDto } from './context.dto';
 
 @Controller('context')
 export class ContextController {
@@ -32,10 +24,5 @@ export class ContextController {
   @Put(':id')
   async update(@Param('id') id: string, @Body() createdContextDto: ContextDto) {
     return this.contextService.update(Number(id), createdContextDto);
-  }
-
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return this.contextService.remove(Number(id));
   }
 }

@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { AnalysisUnitDto } from '../dto/analysis_unit.dto';
-import { AnalysisUnit } from '../entity/analysis_unit';
+import { AnalysisUnitDto } from './analysis_unit.dto';
+import { AnalysisUnit } from './entity/analysis_unit';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CaseStudyContextAU } from 'src/case_study/case_study/entity/case_study_context_au';
@@ -40,24 +40,8 @@ export class AnalysisUnitService {
     }
   }
 
-  async remove(id: number) {
-    if (
-      await this.caseStudyContextRepository.findOne({
-        where: { analysisUnit: id },
-      })
-    ) {
-      throw new NotFoundException(
-        `Can't delete analysis unit because it's assigned to a context`,
-      );
-    }
-    const deleteAnalysisUnit = await this.analysisUnitRepository.delete(id);
-    if (!deleteAnalysisUnit.affected) {
-      throw new NotFoundException(`Analysis unit with id ${id} not found`);
-    }
-  }
-
   //Reporte
-  async findByEvidenceType(typeEvidence: number) {
-    return this.analysisUnitRepository.find({ where: { typeEvidence } });
-  }
+  //async findByEvidenceType(typeEvidence: number) {
+  //return this.analysisUnitRepository.find({ where: { typeEvidence } });
+  //}
 }

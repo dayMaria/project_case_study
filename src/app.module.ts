@@ -7,15 +7,18 @@ import { ContextModule } from './context/context.module';
 import { CaseStudyModule } from './case_study/case_study.module';
 import { AnalysisUnitModule } from './analysis_unit/analysis_unit.module';
 import { AnalysisUnit } from './analysis_unit/analysis_unit/entity/analysis_unit';
-import { Context } from './context/context/entity/context.entity';
+import { Context } from './context/context/context.entity';
 import { User } from './security/users/entity/user';
 import { CaseStudy } from './case_study/case_study/entity/case_study';
 import { CaseStudyContextAU } from './case_study/case_study/entity/case_study_context_au';
 import { BlobModule } from './blob/blob.module';
 import { NestMinioModule } from 'nestjs-minio';
-import { EvidenceModule } from './evidence/evidence.module';
-import { Evidence } from './evidence/entity/evidence.entity';
-import { EvidenceAttachment } from './evidence/entity/evidence-attachment.entity';
+import { TypeEvidence } from './type_evidence/typeEvidence.entity';
+import { Evidence } from './case_study/case_study/entity/evidence';
+import { Attachment } from './case_study/case_study/entity/attachment';
+import { AnalysisUnitTypeEvidence } from './case_study/case_study/entity/analysis_unit_type_evidence';
+import { TypeEvidenceModule } from './type_evidence/typeEvidence.module';
+import { Member } from './case_study/case_study/entity/member';
 
 @Module({
   imports: [
@@ -36,8 +39,11 @@ import { EvidenceAttachment } from './evidence/entity/evidence-attachment.entity
           User,
           CaseStudy,
           CaseStudyContextAU,
+          TypeEvidence,
           Evidence,
-          EvidenceAttachment,
+          Attachment,
+          AnalysisUnitTypeEvidence,
+          Member,
         ],
         synchronize: true,
       }),
@@ -58,7 +64,7 @@ import { EvidenceAttachment } from './evidence/entity/evidence-attachment.entity
     ContextModule,
     CaseStudyModule,
     AnalysisUnitModule,
-    EvidenceModule,
+    TypeEvidenceModule,
   ],
   controllers: [],
   providers: [AppService],

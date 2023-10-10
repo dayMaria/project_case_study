@@ -15,8 +15,5 @@ export class User extends BaseEntity {
   active: boolean;
 
   @Column()
-  name: string;
-
-  @Column()
-  email: string;
+  isAdmin: boolean;
 }

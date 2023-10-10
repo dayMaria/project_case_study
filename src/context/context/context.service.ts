@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { ContextDto } from '../dto/context.dto';
-import { Context } from '../entity/context.entity';
+import { ContextDto } from './context.dto';
+import { Context } from './context.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CaseStudyContextAU } from 'src/case_study/case_study/entity/case_study_context_au';
@@ -36,22 +36,6 @@ export class ContextService {
       await this.contextRepository.update(id, createContextDto);
       const contextUpdate = await this.findOne(id);
       return contextUpdate;
-    }
-  }
-
-  async remove(id: number) {
-    if (
-      await this.caseStudyContextRepository.findOne({
-        where: { analysisUnit: id },
-      })
-    ) {
-      throw new NotFoundException(
-        `Can't delete analysis unit because it's assigned to a context`,
-      );
-    }
-    const deleteContext = await this.contextRepository.delete(id);
-    if (!deleteContext.affected) {
-      throw new NotFoundException(`Context with id ${id} not found`);
     }
   }
 }

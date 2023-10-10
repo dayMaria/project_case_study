@@ -24,11 +24,6 @@ export class UserController {
     return this.service.findAll();
   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: number) {
-    return this.service.findOne(id);
-  }
-
   @Put(':id')
   async update(@Param('id') id: string, @Body() dto: UserDto) {
     return this.service.update(Number(id), dto);

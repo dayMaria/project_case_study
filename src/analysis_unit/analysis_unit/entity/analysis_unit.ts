@@ -10,7 +10,4 @@ export class AnalysisUnit {
 
   @Column('text')
   description: string;
-
-  @Column()
-  typeEvidence: number;
 }

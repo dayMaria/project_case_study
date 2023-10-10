@@ -1,14 +1,6 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Put,
-} from '@nestjs/common';
-import { AnalysisUnitService } from '../services/analysis_unit.service';
-import { AnalysisUnitDto } from '../dto/analysis_unit.dto';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import { AnalysisUnitService } from './analysis_unit.service';
+import { AnalysisUnitDto } from './analysis_unit.dto';
 @Controller('analysis-unit')
 export class AnalysisUnitController {
   constructor(private analysisUnitService: AnalysisUnitService) {}
@@ -34,10 +26,5 @@ export class AnalysisUnitController {
     @Body() createdAnalysisUnitDto: AnalysisUnitDto,
   ) {
     return this.analysisUnitService.update(Number(id), createdAnalysisUnitDto);
-  }
-
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return this.analysisUnitService.remove(Number(id));
   }
 }
