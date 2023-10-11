@@ -28,15 +28,15 @@ export class CaseStudyController {
     return this.caseStudyService.create(createdCaseStudyDto);
   }
 
-  //@Get()
-  //async findAll() {
-  //  return this.caseStudyService.findAll();
-  //}
+  @Get()
+  async findAll() {
+    return this.caseStudyService.findAll();
+  }
 
-  //@Get(':id')
-  //async findOne(@Param('id') id: number) {
-  //  return this.caseStudyService.findOne(id);
-  //}
+  @Get(':id')
+  async findOne(@Param('id') id: number) {
+    return this.caseStudyService.findOne(id);
+  }
 
   @Put(':id')
   async update(
@@ -61,13 +61,13 @@ export class CaseStudyController {
     });
   }
 
-  @Post()
+  @Post('addTypeEvidence')
   async addTypeEvidence(
     @Body() analysisUnitTypeEvidence: AnalysisUnitTypeEvidence,
   ) {
     return this.caseStudyService.addTypeEvidence(analysisUnitTypeEvidence);
   }
-  @Delete()
+  @Delete('remove-typeEvidence')
   async removeTypeEvidence(
     @Body() analysisUnitTypeEvidence: AnalysisUnitTypeEvidence,
   ) {
@@ -89,12 +89,36 @@ export class CaseStudyController {
     return this.caseStudyService.removeMember(dto);
   }
 
-  @Get()
-  async reporte() {
-    return this.reportService.ContextAUTypeEvidence();
-  }
-  //@Post('repo')
-  //async reporte(@Param('year1') year1: number, @Param('year2') year2: number) {
-  //  return this.reportService.YearByContextByCaseStudy(year1, year2);
+  //@Get()
+  //async reporte() {
+  //  return this.reportService.getContextAndAnalysisUnitAndTypeEvidence();
+  //}
+  //
+  //@Get(':startYear/:endYear')
+  //async reporte(
+  //  @Param('startYear') startYear: number,
+  //  @Param('endYear') endYear: number,
+  //) {
+  //  return this.reportService.getContextAndCaseStudyByDateRange(
+  //    startYear,
+  //    endYear,
+  //  );
+  //}
+  //
+  //
+  //@Get(':idTypeEvidence')
+  //async reporte(@Param('idTypeEvidence') idTypeEvidence: number) {
+  //  return this.reportService.getAnalysisUnitAndCaseStudyByTypeEvidence(
+  //    idTypeEvidence,
+  //  );
+  //}
+  //
+  //@Get(':idTypeEvidence')
+  //async reporte(@Param('idTypeEvidence') idTypeEvidence: number) {
+  //  return this.reportService.getCaseStudyBytypeEvidence(idTypeEvidence);
+  //}
+  //@Get(':id')
+  //async reporte(@Param('id') id: number) {
+  //  return this.reportService.AnalysisUnitByContextByCaseStudy(id);
   //}
 }

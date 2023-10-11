@@ -9,8 +9,6 @@ import { Attachment } from './case_study/entity/attachment';
 import { AnalysisUnitTypeEvidence } from './case_study/entity/analysis_unit_type_evidence';
 import { Member } from './case_study/entity/member';
 import { ReportService } from './case_study/report_service';
-import { AnalysisUnit } from 'src/analysis_unit/analysis_unit/entity/analysis_unit';
-import { Context } from 'src/context/context/context.entity';
 
 @Module({
   controllers: [CaseStudyController],
@@ -23,8 +21,6 @@ import { Context } from 'src/context/context/context.entity';
       Attachment,
       AnalysisUnitTypeEvidence,
       Member,
-      AnalysisUnit,
-      Context,
     ]),
   ],
 })

@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { ContextController } from './context/context.controller';
-import { ContextService } from './context/context.service';
+import { ContextController } from './context.controller';
+import { ContextService } from './context.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Context } from './context/context.entity';
+import { Context } from './context.entity';
 import { CaseStudyContextAU } from 'src/case_study/case_study/entity/case_study_context_au';
 
 @Module({

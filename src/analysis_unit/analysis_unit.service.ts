@@ -3,15 +3,11 @@ import { AnalysisUnitDto } from './analysis_unit.dto';
 import { AnalysisUnit } from './entity/analysis_unit';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CaseStudyContextAU } from 'src/case_study/case_study/entity/case_study_context_au';
-
 @Injectable()
 export class AnalysisUnitService {
   constructor(
     @InjectRepository(AnalysisUnit)
     private readonly analysisUnitRepository: Repository<AnalysisUnit>,
-    @InjectRepository(CaseStudyContextAU)
-    private readonly caseStudyContextRepository: Repository<CaseStudyContextAU>,
   ) {}
 
   async create(createAnalysisUnitDto: AnalysisUnitDto) {
