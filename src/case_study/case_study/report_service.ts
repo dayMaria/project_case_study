@@ -11,6 +11,7 @@ export class ReportService {
     private readonly service: CaseStudyService,
   ) {}
   async getCaseStudyBytypeEvidence(idTypeEvidence: number) {
+    //ya
     const result = await this.caseStudyContextAuRepository
       .createQueryBuilder('case_study_context_au')
       .leftJoinAndSelect(
@@ -39,7 +40,8 @@ export class ReportService {
     //});
   }
 
-  async AnalysisUnitByContextByCaseStudy(id: number) {
+  async getAnalysisUnitAndCaseStudyByContext(id: number) {
+    //ya
     const result = await this.caseStudyContextAuRepository
       .createQueryBuilder('case_study_context_au')
       .leftJoinAndSelect(
@@ -75,6 +77,7 @@ export class ReportService {
   }
 
   async getAnalysisUnitAndCaseStudyByTypeEvidence(idTypeEvidence: number) {
+    //ya
     const result = await this.caseStudyContextAuRepository
       .createQueryBuilder('case_study_context_au')
       .leftJoinAndSelect(
@@ -114,38 +117,44 @@ export class ReportService {
   }
 
   async getContextAndAnalysisUnitAndTypeEvidence() {
+    //ya
     const result = await this.caseStudyContextAuRepository
       .createQueryBuilder('case_study_context_au')
-      .leftJoinAndSelect(
+      .innerJoinAndSelect(
         'analysis_unit_type_evidence',
         'aute',
         'aute.confID = case_study_context_au.id',
       )
-      .leftJoinAndSelect(
+      .innerJoinAndSelect(
         'context',
         'context',
         'context.id = case_study_context_au.context',
       )
-      .leftJoinAndSelect(
+      .innerJoinAndSelect(
         'analysis_unit',
         'au',
         'au.id = case_study_context_au.analysisUnit',
       )
-      .leftJoinAndSelect('type_evidence', 'te', 'te.id = aute.type_evidence')
-      .select(['context.name', 'au.name', 'te.name'])
+      .innerJoinAndSelect('type_evidence', 'te', 'te.id = aute.type_evidence')
+      .select([
+        'context.name as context_name',
+        'au.name as analysis_unit_name',
+        'te.name as type_evidence_name',
+      ])
       .getRawMany();
     return result;
   }
 
   async getContextAndCaseStudyByDateRange(startYear: number, endYear: number) {
+    //ya
     const result = await this.caseStudyContextAuRepository
       .createQueryBuilder('case_study_context_au')
-      .leftJoinAndSelect(
+      .innerJoinAndSelect(
         'context',
         'context',
         'context.id = case_study_context_au.context',
       )
-      .leftJoinAndSelect(
+      .innerJoinAndSelect(
         'case_study',
         'caseStudy',
         'caseStudy.id = case_study_context_au.caseStudy',
@@ -154,7 +163,12 @@ export class ReportService {
         startYear,
         endYear,
       })
-      .select(['context.name', 'caseStudy.name'])
+      .groupBy('context.id, caseStudy.id')
+      .orderBy('context.id, caseStudy.id')
+      .select([
+        'context.name as context_name',
+        'caseStudy.name as caseStudy_name',
+      ])
       .getRawMany();
     return result;
   }

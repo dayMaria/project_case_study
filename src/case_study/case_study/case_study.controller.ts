@@ -87,7 +87,7 @@ export class CaseStudyController {
     return this.caseStudyService.removeMember(id);
   }
 
-  @Get('/reporte1')
+  @Get('/repo/reporte1')
   async reporteGetContextAndAnalysisUnitAndTypeEvidence() {
     return this.reportService.getContextAndAnalysisUnitAndTypeEvidence();
   }
@@ -120,6 +120,6 @@ export class CaseStudyController {
   }
   @Get('/reporte5/:id')
   async reporteGetAnalysisUnitByContextByCaseStudy(@Param('id') id: number) {
-    return this.reportService.AnalysisUnitByContextByCaseStudy(id);
+    return this.reportService.getAnalysisUnitAndCaseStudyByContext(id);
   }
 }
