@@ -1,14 +1,17 @@
-import { Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { MemberType } from './member_type.enum';
 
 @Entity()
 export class Member {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
   caseStudy: number;
 
-  @PrimaryColumn()
+  @Column()
   user: number;
 
-  @PrimaryColumn({ enum: MemberType })
+  @Column({ enum: MemberType })
   type: MemberType;
 }

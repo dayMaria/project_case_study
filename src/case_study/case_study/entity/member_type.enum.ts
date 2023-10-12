@@ -1,4 +1,4 @@
 export enum MemberType {
-  InvestigadorJefe,
-  Investigador,
+  InvestigadorJefe = 'InvestigadorJefe',
+  Investigador = 'Investigador',
 }

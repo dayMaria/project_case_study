@@ -10,6 +10,8 @@ import { Attachment } from './entity/attachment';
 import { RegisterEvidenceDto } from './dto/register_evidence_dto';
 import { BlobService } from 'src/blob/blob.service';
 import { Member } from './entity/member';
+import { MemberDto } from './dto/member.dto';
+import { AnalysisUnitTypeEvidenceDto } from './dto/analysis_unit_type_evidence.dto';
 
 @Injectable()
 export class CaseStudyService {
@@ -20,13 +22,15 @@ export class CaseStudyService {
     private readonly caseStudyContextAuRepository: Repository<CaseStudyContextAU>,
     @InjectRepository(AnalysisUnitTypeEvidence)
     private readonly analysisUnitTypeEvindences: Repository<AnalysisUnitTypeEvidence>,
-    @InjectRepository(Evidence)
-    private readonly evidenceRepository: Repository<Evidence>,
+    @InjectRepository(AnalysisUnitTypeEvidence)
+    private readonly analysisUnitTypeEvidenceRepository: Repository<AnalysisUnitTypeEvidence>,
     @InjectRepository(Attachment)
     private readonly attachmentRepository: Repository<Attachment>,
     private readonly blobService: BlobService,
     @InjectRepository(Member)
     private readonly memberRepository: Repository<Member>,
+    @InjectRepository(Evidence)
+    private readonly evidenceRepository: Repository<Evidence>,
   ) {}
 
   async create(createCaseStudyDto: CaseStudyDto) {
@@ -117,7 +121,7 @@ export class CaseStudyService {
     throw new NotFoundException(`Case study with id ${id} not found`);
   }
 
-  async addTypeEvidence(dto: AnalysisUnitTypeEvidence) {
+  async addTypeEvidence(dto: AnalysisUnitTypeEvidenceDto) {
     const entity = await this.analysisUnitTypeEvindences.findOne({
       where: dto,
     });
@@ -127,18 +131,12 @@ export class CaseStudyService {
     await this.analysisUnitTypeEvindences.save(dto);
   }
 
-  async removeTypeEvidence(dto: AnalysisUnitTypeEvidence) {
-    const evidence = await this.evidenceRepository.findOne({
-      where: {
-        confiD: dto.confID,
-        typeEvidence: dto.type_evidence,
-      },
+  async removeTypeEvidence(id) {
+    const evidence = await this.analysisUnitTypeEvidenceRepository.findOne({
+      where: { id },
     });
     if (evidence) throw new Error('Ya hay evidencias de este tipo registradas');
-    await this.evidenceRepository.delete({
-      confiD: dto.confID,
-      typeEvidence: dto.type_evidence,
-    });
+    await this.analysisUnitTypeEvidenceRepository.delete(id);
   }
 
   async registerEvidence(dto: RegisterEvidenceDto) {
@@ -164,11 +162,11 @@ export class CaseStudyService {
     await this.evidenceRepository.delete(id);
   }
 
-  async addMember(dto: Member) {
+  async addMember(dto: MemberDto) {
     await this.memberRepository.save(dto);
   }
 
-  async removeMember(dto: Member) {
-    await this.memberRepository.delete({ ...dto });
+  async removeMember(id: number) {
+    await this.memberRepository.delete(id);
   }
 }

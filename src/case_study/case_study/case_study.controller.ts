@@ -11,10 +11,10 @@ import {
 } from '@nestjs/common';
 import { CaseStudyService } from './case_study.service';
 import { CaseStudyDto } from './dto/case_study.dto';
-import { AnalysisUnitTypeEvidence } from './entity/analysis_unit_type_evidence';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { Member } from './entity/member';
 import { ReportService } from './report_service';
+import { MemberDto } from './dto/member.dto';
+import { AnalysisUnitTypeEvidenceDto } from './dto/analysis_unit_type_evidence.dto';
 
 @Controller('case-study')
 export class CaseStudyController {
@@ -62,63 +62,64 @@ export class CaseStudyController {
   }
 
   @Post('addTypeEvidence')
-  async addTypeEvidence(
-    @Body() analysisUnitTypeEvidence: AnalysisUnitTypeEvidence,
+  async addAnalysisUnitTypeEvidence(
+    @Body() analysisUnitTypeEvidence: AnalysisUnitTypeEvidenceDto,
   ) {
     return this.caseStudyService.addTypeEvidence(analysisUnitTypeEvidence);
   }
-  @Delete('remove-typeEvidence')
-  async removeTypeEvidence(
-    @Body() analysisUnitTypeEvidence: AnalysisUnitTypeEvidence,
-  ) {
-    return this.caseStudyService.removeTypeEvidence(analysisUnitTypeEvidence);
+  @Delete('/remove-typeEvidence/:id')
+  async removeTypeEvidence(@Param('id') id: number) {
+    return this.caseStudyService.removeTypeEvidence(id);
   }
 
-  @Delete(':id')
+  @Delete('/remove-evidence/:id')
   async removeEvidence(@Param('id') id: number) {
     return this.caseStudyService.removeEvidence(id);
   }
 
   @Post('add-member')
-  async addMember(@Body() dto: Member) {
+  async addMember(@Body() dto: MemberDto) {
     return this.caseStudyService.addMember(dto);
   }
 
-  @Delete('remove-member')
-  async removeMember(@Body() dto: Member) {
-    return this.caseStudyService.removeMember(dto);
+  @Delete('/remove-member/:id')
+  async removeMember(@Param('id') id: number) {
+    return this.caseStudyService.removeMember(id);
   }
 
-  //@Get()
-  //async reporte() {
-  //  return this.reportService.getContextAndAnalysisUnitAndTypeEvidence();
-  //}
-  //
-  //@Get(':startYear/:endYear')
-  //async reporte(
-  //  @Param('startYear') startYear: number,
-  //  @Param('endYear') endYear: number,
-  //) {
-  //  return this.reportService.getContextAndCaseStudyByDateRange(
-  //    startYear,
-  //    endYear,
-  //  );
-  //}
-  //
-  //
-  //@Get(':idTypeEvidence')
-  //async reporte(@Param('idTypeEvidence') idTypeEvidence: number) {
-  //  return this.reportService.getAnalysisUnitAndCaseStudyByTypeEvidence(
-  //    idTypeEvidence,
-  //  );
-  //}
-  //
-  //@Get(':idTypeEvidence')
-  //async reporte(@Param('idTypeEvidence') idTypeEvidence: number) {
-  //  return this.reportService.getCaseStudyBytypeEvidence(idTypeEvidence);
-  //}
-  //@Get(':id')
-  //async reporte(@Param('id') id: number) {
-  //  return this.reportService.AnalysisUnitByContextByCaseStudy(id);
-  //}
+  @Get('/reporte1')
+  async reporteGetContextAndAnalysisUnitAndTypeEvidence() {
+    return this.reportService.getContextAndAnalysisUnitAndTypeEvidence();
+  }
+
+  @Get('/reporte2/:startYear/:endYear')
+  async reporteGetContextAndStudyByDateRange(
+    @Param('startYear') startYear: number,
+    @Param('endYear') endYear: number,
+  ) {
+    return this.reportService.getContextAndCaseStudyByDateRange(
+      startYear,
+      endYear,
+    );
+  }
+
+  @Get('/reporte3/:idTypeEvidence')
+  async reporteGetAnalysisUnitAndCaseStudyByTypeEvidence(
+    @Param('idTypeEvidence') idTypeEvidence: number,
+  ) {
+    return this.reportService.getAnalysisUnitAndCaseStudyByTypeEvidence(
+      idTypeEvidence,
+    );
+  }
+
+  @Get('/reporte4/:idTypeEvidence')
+  async reporteGetCaseStudyBytypeEvidence(
+    @Param('idTypeEvidence') idTypeEvidence: number,
+  ) {
+    return this.reportService.getCaseStudyBytypeEvidence(idTypeEvidence);
+  }
+  @Get('/reporte5/:id')
+  async reporteGetAnalysisUnitByContextByCaseStudy(@Param('id') id: number) {
+    return this.reportService.AnalysisUnitByContextByCaseStudy(id);
+  }
 }

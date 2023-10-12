@@ -1,10 +1,13 @@
-import { Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class AnalysisUnitTypeEvidence {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
   confID: number;
 
-  @PrimaryColumn()
+  @Column()
   type_evidence: number;
 }

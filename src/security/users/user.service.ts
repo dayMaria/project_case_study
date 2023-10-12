@@ -12,7 +12,9 @@ export class UserService {
   ) {}
 
   async create(dto: UserDto) {
+    const user = this.repository.create(dto);
     await this.repository.save(dto);
+    return user;
   }
 
   async findAll() {
@@ -20,7 +22,10 @@ export class UserService {
   }
 
   async update(id: number, dto: UserDto) {
-    await this.repository.update({ id }, dto);
+    if (await this.repository.findOne({ where: { id } })) {
+      await this.repository.update(id, dto);
+      return await this.repository.find({ where: { id } });
+    }
   }
 
   async remove(id: number) {
