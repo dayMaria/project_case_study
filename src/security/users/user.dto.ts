@@ -1,4 +1,4 @@
-import { IsBoolean, IsString, MinLength } from 'class-validator';
+import { IsString, MinLength } from 'class-validator';
 
 export class UserDto {
   @IsString()
@@ -9,9 +9,6 @@ export class UserDto {
   @MinLength(1)
   password: string;
 
-  @IsBoolean()
-  active: boolean;
-
-  @IsBoolean()
-  isAdmin: boolean;
+  @IsString()
+  rol: string;
 }

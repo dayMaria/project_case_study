@@ -15,5 +15,5 @@ export class User extends BaseEntity {
   active: boolean;
 
   @Column()
-  isAdmin: boolean;
+  rol: string;
 }
