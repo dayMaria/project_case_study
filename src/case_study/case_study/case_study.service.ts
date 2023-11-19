@@ -36,9 +36,11 @@ export class CaseStudyService {
   async create(createCaseStudyDto: CaseStudyDto) {
     const caseStudy = await this.caseStudyRepository.save({
       name: createCaseStudyDto.name,
-      commit_date: createCaseStudyDto.commit_date,
+      commit_date: new Date(createCaseStudyDto.commit_date),
       description: createCaseStudyDto.description,
-      end_date: createCaseStudyDto.end_date,
+      end_date: createCaseStudyDto.end_date
+        ? new Date(createCaseStudyDto.end_date)
+        : undefined,
       //create_date: new Date(),
     });
     const contextUas: Partial<CaseStudyContextAU>[] = [];

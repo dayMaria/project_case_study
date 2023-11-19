@@ -11,7 +11,7 @@ export class CaseStudy extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('text', { unique: true })
+  @Column()
   name: string;
 
   @Column('text')
@@ -23,6 +23,6 @@ export class CaseStudy extends BaseEntity {
   @Column({ type: 'date' })
   commit_date: Date;
 
-  @Column({ type: 'date' })
-  end_date: Date;
+  @Column({ nullable: true, type: 'date' })
+  end_date?: Date;
 }
