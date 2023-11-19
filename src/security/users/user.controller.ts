@@ -24,6 +24,11 @@ export class UserController {
     return this.service.findAll();
   }
 
+  @Get('ids/:ids')
+  async findListId(@Param('ids') list: string) {
+    return this.service.findListId(list.split(',').map((x) => parseInt(x)));
+  }
+
   @Put(':id')
   async update(@Param('id') id: string, @Body() dto: UserDto) {
     return this.service.update(Number(id), dto);

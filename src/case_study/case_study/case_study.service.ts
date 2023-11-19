@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CaseStudyDto } from './dto/case_study.dto';
+import { CaseStudyDto, YearsDto } from './dto/case_study.dto';
 import { CaseStudy } from './entity/case_study';
 import { Repository } from 'typeorm';
 import { CaseStudyContextAU } from './entity/case_study_context_au';
@@ -57,6 +57,11 @@ export class CaseStudyService {
       }
     }
     await this.caseStudyContextAuRepository.save(contextUas);
+    const members: Partial<Member>[] = createCaseStudyDto.users.map((u) => ({
+      user: u,
+      caseStudy: caseStudy.id,
+    }));
+    await this.memberRepository.save(members);
     return caseStudy;
   }
 
@@ -65,32 +70,49 @@ export class CaseStudyService {
   }
 
   async findOne(id: number) {
-    const result = await this.caseStudyContextAuRepository
-      .createQueryBuilder('case_study_context_au')
-      .leftJoinAndSelect(
-        'case_study',
-        'caseStudy',
-        'caseStudy.id = case_study_context_au.caseStudy',
-      )
-      .leftJoinAndSelect(
-        'context',
-        'context',
-        'context.id = case_study_context_au.context',
-      )
-      .leftJoinAndSelect(
-        'analysis_unit',
-        'au',
-        'au.id = case_study_context_au.analysisUnit',
-      )
-      .where('case_study_context_au.caseStudy = :id', { id })
-      .select([
-        'caseStudy.id, caseStudy.name as case_study_name,\
-         caseStudy.description, caseStudy.create_date, caseStudy.end_date,\
-          caseStudy.commit_date, case_study_context_au.year, context.name as context_name,\
-          au.name as analysis_unit_name',
-      ])
-      .getRawMany();
-    return result;
+    const caseStudy = await CaseStudy.findOne({
+      where: { id },
+    });
+    if (!caseStudy) {
+      throw new NotFoundException(`Case study with id ${id} not found`);
+    }
+    const yearsDto: YearsDto[] = [];
+    const contextsAus = await this.caseStudyContextAuRepository.find({
+      where: { caseStudy: id },
+    });
+    const members = await this.memberRepository.find({
+      select: ['user'],
+      where: { caseStudy: id },
+    });
+    const years = new Set();
+    contextsAus.forEach((x) => years.add(x.year));
+    years.forEach((year: number) => {
+      //console.log(year);
+      const yearDto: YearsDto = {
+        year,
+        contexts: [],
+      };
+      contextsAus
+        .filter((c) => c.year === year)
+        .forEach((ctxAus) => {
+          const aus = contextsAus
+            .filter((c) => c.year === year && c.context === ctxAus.context)
+            .map((c) => c.analysisUnit);
+          yearDto.contexts.push({
+            id: ctxAus.context,
+            aus,
+          });
+        });
+      yearsDto.push(yearDto);
+    });
+    return {
+      name: caseStudy.name,
+      description: caseStudy.description,
+      commit_date: caseStudy.commit_date,
+      end_date: caseStudy.end_date,
+      years: yearsDto,
+      members: members.map((m) => m.user),
+    };
   }
 
   async update(id: number, createCaseStudyDto: CaseStudyDto) {
@@ -99,9 +121,11 @@ export class CaseStudyService {
         { id },
         {
           name: createCaseStudyDto.name,
-          commit_date: createCaseStudyDto.commit_date,
+          commit_date: new Date(createCaseStudyDto.commit_date),
           description: createCaseStudyDto.description,
-          end_date: createCaseStudyDto.end_date,
+          end_date: createCaseStudyDto.end_date
+            ? new Date(createCaseStudyDto.end_date)
+            : undefined,
         },
       );
       const contextUas: Partial<CaseStudyContextAU>[] = [];
@@ -117,6 +141,7 @@ export class CaseStudyService {
           }
         }
       }
+      await this.caseStudyContextAuRepository.delete({ caseStudy: id })
       await this.caseStudyContextAuRepository.save(contextUas);
       return this.findOne(id);
     }

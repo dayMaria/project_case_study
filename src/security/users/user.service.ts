@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UserDto } from './user.dto';
 import { User } from './user';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
@@ -19,6 +19,14 @@ export class UserService {
 
   async findAll() {
     return await this.repository.find({ where: { active: true } });
+  }
+
+  findListId(list: number[]) {
+    return this.repository.find({
+      where: {
+        id: In(list),
+      },
+    });
   }
 
   async update(id: number, dto: UserDto) {

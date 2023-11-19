@@ -12,6 +12,8 @@ export class Member {
   @Column()
   user: number;
 
+  /*
   @Column({ enum: MemberType })
   type: MemberType;
+  */
 }

@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { AnalysisUnitDto } from './analysis_unit.dto';
 import { AnalysisUnit } from './entity/analysis_unit';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 @Injectable()
 export class AnalysisUnitService {
   constructor(
@@ -28,6 +28,14 @@ export class AnalysisUnitService {
       throw new NotFoundException(`Analysis unit with id ${id} not found`);
     }
     return found;
+  }
+
+  findListId(list: number[]) {
+    return this.analysisUnitRepository.find({
+      where: {
+        id: In(list),
+      },
+    });
   }
 
   async update(id: number, createAnalysisUnitDto: AnalysisUnitDto) {

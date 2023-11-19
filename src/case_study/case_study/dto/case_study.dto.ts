@@ -28,4 +28,7 @@ export class CaseStudyDto {
 
   @IsArray()
   years: YearsDto[];
+
+  @IsArray()
+  users: number[];
 }

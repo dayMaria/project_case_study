@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ContextDto } from './context.dto';
 import { Context } from './context.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CaseStudyContextAU } from 'src/case_study/case_study/entity/case_study_context_au';
 
@@ -29,6 +29,14 @@ export class ContextService {
       throw new NotFoundException(`Context with id ${id} not found`);
     }
     return found;
+  }
+
+  findListId(list: number[]) {
+    return this.contextRepository.find({
+      where: {
+        id: In(list),
+      },
+    });
   }
 
   async update(id: number, createContextDto: ContextDto) {

@@ -20,6 +20,13 @@ export class AnalysisUnitController {
     return this.analysisUnitService.findOne(id);
   }
 
+  @Get('ids/:ids')
+  async findListId(@Param('ids') list: string) {
+    return this.analysisUnitService.findListId(
+      list.split(',').map((x) => parseInt(x)),
+    );
+  }
+
   @Put(':id')
   async update(
     @Param('id') id: string,
