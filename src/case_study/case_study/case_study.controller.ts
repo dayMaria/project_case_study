@@ -38,6 +38,13 @@ export class CaseStudyController {
     return this.caseStudyService.findOne(id);
   }
 
+  @Get('ids/:ids')
+  async findListId(@Param('ids') list: string) {
+    return this.caseStudyService.findListId(
+      list.split(',').map((x) => parseInt(x)),
+    );
+  }
+
   @Put(':id')
   async update(
     @Param('id') id: string,
@@ -59,6 +66,11 @@ export class CaseStudyController {
       ...dto,
       files,
     });
+  }
+
+  @Get('misEvidencias/:id')
+  async misEvidencias(@Param('id') id: number) {
+    return this.caseStudyService.misEvidencias(id);
   }
 
   @Post('addTypeEvidence')

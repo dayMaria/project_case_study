@@ -1,8 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserDto } from './user.dto';
 import { User } from './user';
 import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as bcrypt from 'bcrypt';
+import { UserLoginDto } from './userLogin.dto';
+import { CreateUserDto } from './create-user.dto';
 
 @Injectable()
 export class UserService {
@@ -11,14 +14,36 @@ export class UserService {
     private readonly repository: Repository<User>,
   ) {}
 
-  async create(dto: UserDto) {
-    const user = this.repository.create({ ...dto, active: true });
+  async create(dto: CreateUserDto) {
+    const salt = await bcrypt.genSalt();
+    const hashedPw = await bcrypt.hash(dto.password, salt);
+    const user = this.repository.create({
+      ...dto,
+      password: hashedPw,
+      active: true,
+    });
     await this.repository.save(user);
     return user;
   }
 
   async findAll() {
     return await this.repository.find({ where: { active: true } });
+  }
+
+  async findUser(userLogin: UserLoginDto) {
+    const user = await this.repository.findOne({
+      where: { username: userLogin.username },
+    });
+    if (!user) throw new BadRequestException('Credenciales invalidas');
+
+    const matchPw = await bcrypt.compare(userLogin.password, user.password);
+    if (!matchPw) throw new BadRequestException('Credenciales invalidas');
+
+    return {
+      id: user.id,
+      username: user.username,
+      rol: user.rol,
+    };
   }
 
   findListId(list: number[]) {

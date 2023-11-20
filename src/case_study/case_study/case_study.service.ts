@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CaseStudyDto, YearsDto } from './dto/case_study.dto';
 import { CaseStudy } from './entity/case_study';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { CaseStudyContextAU } from './entity/case_study_context_au';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AnalysisUnitTypeEvidence } from './entity/analysis_unit_type_evidence';
@@ -98,10 +98,11 @@ export class CaseStudyService {
           const aus = contextsAus
             .filter((c) => c.year === year && c.context === ctxAus.context)
             .map((c) => c.analysisUnit);
-          yearDto.contexts.push({
-            id: ctxAus.context,
-            aus,
-          });
+          if (!yearDto.contexts.some((x) => x.id === ctxAus.context))
+            yearDto.contexts.push({
+              id: ctxAus.context,
+              aus,
+            });
         });
       yearsDto.push(yearDto);
     });
@@ -141,7 +142,7 @@ export class CaseStudyService {
           }
         }
       }
-      await this.caseStudyContextAuRepository.delete({ caseStudy: id })
+      await this.caseStudyContextAuRepository.delete({ caseStudy: id });
       await this.caseStudyContextAuRepository.save(contextUas);
       return this.findOne(id);
     }
@@ -183,6 +184,27 @@ export class CaseStudyService {
         file.buffer,
       );
     }
+  }
+
+  async misEvidencias(id: number) {
+    const members = await this.memberRepository.find({
+      select: ['caseStudy'],
+      where: { user: id },
+    });
+    return this.caseStudyContextAuRepository.find({
+      select: ['caseStudy', 'context', 'analysisUnit'],
+      where: {
+        caseStudy: In(members.map((m) => m.caseStudy)),
+      },
+    });
+  }
+
+  findListId(list: number[]) {
+    return this.caseStudyRepository.find({
+      where: {
+        id: In(list),
+      },
+    });
   }
 
   async removeEvidence(id: number) {
