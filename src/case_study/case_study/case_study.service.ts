@@ -38,6 +38,7 @@ export class CaseStudyService {
       name: createCaseStudyDto.name,
       commit_date: new Date(createCaseStudyDto.commit_date),
       description: createCaseStudyDto.description,
+      user: createCaseStudyDto.user,
       end_date: createCaseStudyDto.end_date
         ? new Date(createCaseStudyDto.end_date)
         : undefined,
@@ -65,8 +66,16 @@ export class CaseStudyService {
     return caseStudy;
   }
 
-  async findAll() {
-    return await this.caseStudyRepository.find();
+  async findAll(user: number) {
+    const members = await this.memberRepository.find({
+      select: ['caseStudy'],
+      where: {
+        user,
+      },
+    });
+    return this.caseStudyRepository.find({
+      where: [{ user }, { id: In(members.map((x) => x.caseStudy)) }],
+    });
   }
 
   async findOne(id: number) {
@@ -124,6 +133,7 @@ export class CaseStudyService {
           name: createCaseStudyDto.name,
           commit_date: new Date(createCaseStudyDto.commit_date),
           description: createCaseStudyDto.description,
+          user: createCaseStudyDto.user,
           end_date: createCaseStudyDto.end_date
             ? new Date(createCaseStudyDto.end_date)
             : undefined,
@@ -159,7 +169,7 @@ export class CaseStudyService {
     await this.analysisUnitTypeEvindences.save(dto);
   }
 
-  async removeTypeEvidence(id) {
+  async removeTypeEvidence(id: number) {
     const evidence = await this.analysisUnitTypeEvidenceRepository.findOne({
       where: { id },
     });

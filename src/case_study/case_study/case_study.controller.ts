@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
@@ -29,8 +30,8 @@ export class CaseStudyController {
   }
 
   @Get()
-  async findAll() {
-    return this.caseStudyService.findAll();
+  async findAll(@Query('user') user: number) {
+    return this.caseStudyService.findAll(user);
   }
 
   @Get(':id')
@@ -115,7 +116,7 @@ export class CaseStudyController {
     );
   }
 
-  @Get('/reporte3/:idTypeEvidence')
+  @Get('/reporte1/:idTypeEvidence')
   async reporteGetAnalysisUnitAndCaseStudyByTypeEvidence(
     @Param('idTypeEvidence') idTypeEvidence: number,
   ) {
@@ -124,13 +125,13 @@ export class CaseStudyController {
     );
   }
 
-  @Get('/reporte4/:idTypeEvidence')
+  @Get('/reporte5/:idTypeEvidence')
   async reporteGetCaseStudyBytypeEvidence(
     @Param('idTypeEvidence') idTypeEvidence: number,
   ) {
     return this.reportService.getCaseStudyBytypeEvidence(idTypeEvidence);
   }
-  @Get('/reporte5/:id')
+  @Get('/reporte4/:id')
   async reporteGetAnalysisUnitByContextByCaseStudy(@Param('id') id: number) {
     return this.reportService.getAnalysisUnitAndCaseStudyByContext(id);
   }

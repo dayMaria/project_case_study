@@ -1,4 +1,10 @@
-import { IsString, MinLength, IsOptional, IsArray } from 'class-validator';
+import {
+  IsString,
+  MinLength,
+  IsOptional,
+  IsArray,
+  IsNumber,
+} from 'class-validator';
 
 export interface ContextDto {
   id: number;
@@ -31,4 +37,7 @@ export class CaseStudyDto {
 
   @IsArray()
   users: number[];
+
+  @IsNumber()
+  user: number;
 }

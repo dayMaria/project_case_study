@@ -25,4 +25,7 @@ export class CaseStudy extends BaseEntity {
 
   @Column({ nullable: true, type: 'date' })
   end_date?: Date;
+
+  @Column()
+  user: number;
 }
