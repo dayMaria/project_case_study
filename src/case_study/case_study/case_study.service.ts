@@ -66,6 +66,9 @@ export class CaseStudyService {
     return caseStudy;
   }
 
+  async findAllCasesStudies() {
+    return await this.caseStudyRepository.find();
+  }
   async findAll(user: number) {
     const members = await this.memberRepository.find({
       select: ['caseStudy'],

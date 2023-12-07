@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { UserService } from './security/users/user.service';
+import { json, urlencoded } from 'body-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
@@ -14,6 +15,8 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
+  app.use(json({ limit: '100mb' }));
+  app.use(urlencoded({ limit: '100mb' }));
 
   const userServices = await app.resolve(UserService);
   if ((await userServices.findAll()).length === 0) {

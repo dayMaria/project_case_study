@@ -11,6 +11,7 @@ import { UserDto } from './user.dto';
 import { UserService } from './user.service';
 import { UserLoginDto } from './userLogin.dto';
 import { CreateUserDto } from './create-user.dto';
+import { UpdateUserDto } from './updateUser.dto';
 
 @Controller('user')
 export class UserController {
@@ -39,6 +40,11 @@ export class UserController {
   @Put(':id')
   async update(@Param('id') id: string, @Body() dto: UserDto) {
     return this.service.update(Number(id), dto);
+  }
+
+  @Put('/update/:id')
+  async updateUser(@Param('id') id: number, @Body() dto: UserLoginDto) {
+    return this.service.updateUser(id, dto);
   }
 
   @Delete(':id')

@@ -34,6 +34,11 @@ export class CaseStudyController {
     return this.caseStudyService.findAll(user);
   }
 
+  @Get('all')
+  async findAllCasesStudies() {
+    return this.caseStudyService.findAllCasesStudies();
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: number) {
     return this.caseStudyService.findOne(id);
@@ -100,12 +105,16 @@ export class CaseStudyController {
     return this.caseStudyService.removeMember(id);
   }
 
-  @Get('/repo/reporte1')
+  @Get('/repo/reporte2')
   async reporteGetContextAndAnalysisUnitAndTypeEvidence() {
     return this.reportService.getContextAndAnalysisUnitAndTypeEvidence();
   }
 
-  @Get('/reporte2/:startYear/:endYear')
+  @Get('/members/:id')
+  async getCaseStudyForMembers(@Param('id') id: number) {
+    return this.reportService.findCasesStudiesForMembers(id);
+  }
+  @Get('/reporte3/:startYear/:endYear')
   async reporteGetContextAndStudyByDateRange(
     @Param('startYear') startYear: number,
     @Param('endYear') endYear: number,

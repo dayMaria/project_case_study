@@ -2,13 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CaseStudyContextAU } from './entity/case_study_context_au';
-import { CaseStudyService } from './case_study.service';
+import { Member } from './entity/member';
 @Injectable()
 export class ReportService {
   constructor(
     @InjectRepository(CaseStudyContextAU)
     private readonly caseStudyContextAuRepository: Repository<CaseStudyContextAU>,
-    private readonly service: CaseStudyService,
+    @InjectRepository(Member)
+    private readonly memberRepository: Repository<Member>,
   ) {}
   async getCaseStudyBytypeEvidence(idTypeEvidence: number) {
     //ya
@@ -58,22 +59,23 @@ export class ReportService {
       .select(['au.name', 'caseStudy.name'])
       .getRawMany();
     return result;
-    //const caseStudy = await this.caseStudyContextAuRepository.find({
-    //  where: { context: id },
-    //});
-    //const result = [];
-    //for (const c of caseStudy) {
-    //  const row = this.service.findOne(c.caseStudy);
-    //  result.push(row);
-    //}
-    //result.forEach((r) => {
-    //  r.years
-    //    .filter((y) => y.contexts.some((c) => c.id === id))
-    //    .forEach((y) => {
-    //      y.contexts = y.contexts.filter((c) => c.id === id);
-    //    });
-    //});
-    //return result;
+  }
+
+  async findCasesStudiesForMembers(id: number) {
+    const result = await this.memberRepository
+      .createQueryBuilder('member')
+      .leftJoinAndSelect('user', 'u', 'u.id = member.user')
+      .leftJoinAndSelect('case_study', 'cs', 'cs.id = member.caseStudy')
+      .where('member.user = :id', { id })
+      .select([
+        'cs.id',
+        'cs.name',
+        'cs.description',
+        'cs.commit_date',
+        'cs.end_date',
+      ])
+      .getRawMany();
+    return result;
   }
 
   async getAnalysisUnitAndCaseStudyByTypeEvidence(idTypeEvidence: number) {
