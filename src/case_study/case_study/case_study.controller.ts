@@ -144,4 +144,17 @@ export class CaseStudyController {
   async reporteGetAnalysisUnitByContextByCaseStudy(@Param('id') id: number) {
     return this.reportService.getAnalysisUnitAndCaseStudyByContext(id);
   }
+
+  @Get('/tableEvidence/:idCaseStudy/:idContext/:idAnalysisUnit')
+  async getTableEvidence(
+    @Param('idCaseStudy') idCaseStudy: number,
+    @Param('idContext') idContext: number,
+    @Param('idAnalysisUnit') idAnalysisUnit: number,
+  ) {
+    return this.reportService.getCaseStudyAndContextAndAnalysisUnitAndEvidence(
+      idCaseStudy,
+      idContext,
+      idAnalysisUnit,
+    );
+  }
 }

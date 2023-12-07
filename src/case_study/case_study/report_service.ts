@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CaseStudyContextAU } from './entity/case_study_context_au';
 import { Member } from './entity/member';
+import { Evidence } from './entity/evidence';
 @Injectable()
 export class ReportService {
   constructor(
@@ -10,6 +11,8 @@ export class ReportService {
     private readonly caseStudyContextAuRepository: Repository<CaseStudyContextAU>,
     @InjectRepository(Member)
     private readonly memberRepository: Repository<Member>,
+    @InjectRepository(Evidence)
+    private readonly evidenceRepository: Repository<Evidence>,
   ) {}
   async getCaseStudyBytypeEvidence(idTypeEvidence: number) {
     //ya
@@ -29,16 +32,6 @@ export class ReportService {
       .select(['caseStudy.name'])
       .getRawMany();
     return result;
-    //const analysisUnitTypeEvidence =
-    //  await this.analysisUnitTypeEvidenceRepository.find({
-    //    where: { type_evidence: id },
-    //  });
-    //const caseStudyContextAu = await this.caseStudyContextAuRepository.find({
-    //  where: { id: In(analysisUnitTypeEvidence.map((x) => x.confID)) },
-    //});
-    //return await this.caseStudyRepository.find({
-    //  where: { id: In(caseStudyContextAu.map((x) => x.caseStudy)) },
-    //});
   }
 
   async getAnalysisUnitAndCaseStudyByContext(id: number) {
@@ -105,15 +98,6 @@ export class ReportService {
       .where('aute.type_evidence = :idTypeEvidence', { idTypeEvidence })
       .select(['au.name', 'context.name', 'caseStudy.name'])
       .getRawMany();
-    //const typeEvidence = await this.analysisUnitTypeEvidenceRepository.find({
-    //  where: { type_evidence: id },
-    //});
-    //const contextAu = await this.caseStudyContextAuRepository.find({
-    //  where: { id: In(typeEvidence.map((x) => x.confID)) },
-    //});
-    //return await this.analysisUnitRepository.find({
-    //  where: { id: In(contextAu.map((x) => x.analysisUnit)) },
-    //});
     console.log(result);
     return result;
   }
@@ -170,6 +154,35 @@ export class ReportService {
       .select([
         'context.name as context_name',
         'caseStudy.name as caseStudy_name',
+      ])
+      .getRawMany();
+    return result;
+  }
+
+  async getCaseStudyAndContextAndAnalysisUnitAndEvidence(
+    idCaseStudy: number,
+    idContext: number,
+    idAnalysisUnit: number,
+  ) {
+    const result = await this.evidenceRepository
+      .createQueryBuilder('evidence')
+      .leftJoinAndSelect('case_study', 'cs', 'cs.id = evidence.confiD')
+      .leftJoinAndSelect(
+        'case_study_context_au',
+        'csca',
+        'csca.caseStudy = cs.id',
+      )
+      .leftJoinAndSelect('context', 'c', 'csca.context = c.id')
+      .leftJoinAndSelect('analysis_unit', 'au', 'csca.analysisUnit = au.id')
+      .where('cs.id = :idCaseStudy', { idCaseStudy })
+      .andWhere('c.id =:idContext', { idContext })
+      .andWhere('au.id =:idAnalysisUnit', { idAnalysisUnit })
+      .select([
+        'cs.name',
+        'c.name',
+        'au.name',
+        'evidence.label',
+        'DATE(evidence.created)',
       ])
       .getRawMany();
     return result;
